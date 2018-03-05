@@ -1,10 +1,14 @@
 // Load up the discord.js library
 const Discord = require("discord.js");
+const Pokedex = require('pokedex-promise-v2');
+
 
 // This is your client. Some people call it `bot`, some people call it `self`, 
 // some might call it `cootchie`. Either way, when you see `client.something`, or `bot.something`,
 // this is what we're refering to. Your client.
 const client = new Discord.Client();
+
+const poke = new Pokedex();
 
 // Here we load the config.json file that contains our token and our prefix values. 
 const config = require("./configuracao.json");
@@ -15,8 +19,8 @@ client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
   // Example of changing the bot's playing game to something useful. `client.user` is what the
-  // docs refer to as the "ClientUser".
-  client.user.setGame(`on ${client.guilds.size} servers`);
+  // docs refer to as the "ClientUser".  
+  client.user.setPresence({ game: { name: 'Space Galaga' }, status: 'online' })
 });
 
 client.on("guildCreate", guild => {
@@ -25,14 +29,21 @@ client.on("guildCreate", guild => {
   client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
+
+
 client.on("guildDelete", guild => {
   // this event triggers when the bot is removed from a guild.
   console.log(`I have been removed from: ${guild.name} (id: ${guild.id})`);
   client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
-
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
 client.on("message", async message => {
+
+  
+
   // This event will run on every single message received, from any channel or DM.
   
   // It's good practice to ignore other bots. This also makes your bot ignore itself
@@ -67,6 +78,14 @@ client.on("message", async message => {
     message.delete().catch(O_o=>{}); 
     // And we get the bot to say the thing: 
     message.channel.send(sayMessage);
+  }
+  
+
+
+  // If the message is "what is my avatar"
+    if (command ===  'what is my avatar') {
+    // Send the user's avatar URL
+     message.reply(message.author.avatarURL);
   }
   
   if(command === "kick") {
@@ -117,6 +136,28 @@ client.on("message", async message => {
     message.reply(`${member.user.tag} has been banned by ${message.author.tag} because: ${reason}`);
   }
   
+  if (command === "pokedex") {
+
+    pokeName = args.join(" ");
+
+    pokemon = poke.getPokemonByName(pokeName) // with Promise
+    .then(function(response) {
+      message.channel.send(response.name.capitalize() +" Nº "+ response.id + "\nWeight: " + response.weight + "\nHeight: " + response.height, {
+        files: [
+          response.sprites.front_default
+        ]
+      })
+      //message.reply(response.sprites.front_default);
+      //console.log(response);  
+    })
+    .catch(function(error) {
+      console.log('There was an ERROR: ', error);
+      message.reply('There was an ERROR: '+ error.message);
+    });
+  
+    
+  }
+
   if(command === "purge") {
     // This command removes all messages from all users in the channel, up to 100.
     

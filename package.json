@@ -5,8 +5,14 @@
   "main": "bot.js",
   "author": "YOUR-NAME-HERE",
   "dependencies": {
+    "@google-cloud/translate": "^1.1.0",
+    "discord": "^0.8.2",
     "discord.io": "^2.5.3",
     "discord.js": "^11.3.0",
+    "forever-monitor": "^1.7.1",
+    "google-speech-api": "^1.2.0",
+    "node-google-api": "^0.3.0",
+    "pokedex-promise-v2": "^3.1.1",
     "winston": "^2.4.0"
   }
 }
